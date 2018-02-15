@@ -1,0 +1,76 @@
+---
+  - name: Launch an EC2 Instance
+    hosts: local
+    connection: local
+    gather_facts: False
+    tags: provisioning
+
+    # Please provide values for creating/provisioning the EC2 Instance
+    vars:
+      instance_type: t2.micro # Change Instance Type
+      security_group: Pivx-server # Change Security Group Name
+      image: ami-10547475 # Please replace AMI id for ubuntu 16.04 LTS
+      keypair: mocci-ansible # Please replace this with existing key_pair which you in your AWS account
+      region: us-east-2 # Change the Region 
+      count: 1
+
+    # Task to Launch OR Create an EC2 Instance
+    # Create security Group
+    # Launch Instance
+    # Waiting for SSH to come up
+    # Add tag name to instance
+
+    tasks:
+      - name: Create a security group
+        local_action: 
+          module: ec2_group
+          name: "{{ security_group }}"
+          description: Security Group for PIVX Servers
+          region: "{{ region }}"
+          rules:
+            - proto: tcp
+              from_port: 22
+              to_port: 22
+              cidr_ip: 0.0.0.0/0
+            - proto: tcp
+              from_port: 51472
+              to_port: 51472
+              cidr_ip: 0.0.0.0/0
+            - proto: tcp
+              from_port: 51473
+              to_port: 51473
+              cidr_ip: 0.0.0.0/0
+            - proto: tcp
+              from_port: 51474
+              to_port: 51474
+              cidr_ip: 0.0.0.0/0
+          rules_egress:
+            - proto: all
+              cidr_ip: 0.0.0.0/0
+        register: basic_firewall
+
+      - name: Launch new EC2 Instance
+        ec2: 
+            group: "{{ security_group }}"
+            instance_type: "{{ instance_type}}"
+            user_data: "{{ lookup('file', 'user_data.sh') }}" # Installs PIVX Masternode
+            image: "{{ image }}"
+            wait: true 
+            region: "{{ region }}"
+            keypair: "{{ keypair }}"
+            count: "{{count}}"
+        register: ec2
+
+      - name: Wait for SSH to come up
+        local_action: wait_for 
+                      host={{ item.public_ip }} 
+                      port=22 
+                      state=started
+        with_items: ec2.instances
+
+      - name: Add tag to Instance(s)
+        local_action: ec2_tag resource={{ item.id }} region={{ region }} state=present
+        with_items: ec2.instances
+        args:
+          tags:
+            Name: PIVXServer

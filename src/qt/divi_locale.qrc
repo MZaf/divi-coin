@@ -1,0 +1,20 @@
+<!DOCTYPE RCC><RCC version="1.0">
+    <qresource prefix="/translations">
+        <file alias="bg">locale/divi_bg.qm</file>
+        <file alias="de">locale/divi_de.qm</file>
+        <file alias="en">locale/divi_en.qm</file>
+        <file alias="es">locale/divi_es.qm</file>
+        <file alias="fi">locale/divi_fi.qm</file>
+        <file alias="fr">locale/divi_fr.qm</file>
+        <file alias="it">locale/divi_it.qm</file>
+        <file alias="ja">locale/divi_ja.qm</file>
+        <file alias="pl">locale/divi_pl.qm</file>
+        <file alias="pt">locale/divi_pt.qm</file>
+        <file alias="ru">locale/divi_ru.qm</file>
+        <file alias="sk">locale/divi_sk.qm</file>
+        <file alias="sv">locale/divi_sv.qm</file>
+        <file alias="vi">locale/divi_vi.qm</file>
+        <file alias="zh_CN">locale/divi_zh_CN.qm</file>
+        <file alias="zh_TW">locale/divi_zh_TW.qm</file>
+    </qresource>
+</RCC>
