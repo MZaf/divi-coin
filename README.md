@@ -1,0 +1,2 @@
+# divi-coin
+DiviCoin
